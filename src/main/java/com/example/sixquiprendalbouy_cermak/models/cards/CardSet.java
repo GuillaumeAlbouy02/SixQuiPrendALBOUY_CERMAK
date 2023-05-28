@@ -1,23 +1,21 @@
 package com.example.sixquiprendalbouy_cermak.models.cards;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.TreeSet;
+import java.util.*;
 
 public class CardSet {
 
-    private final TreeSet<Card> cards = new TreeSet<>();
+    private final ArrayList<Card> cards = new ArrayList<>();
 
     //---------------------------------------------------------------------------------------------
 
-    public CardSet(Collection<Card> ls) {
+    public CardSet(List<Card> ls) {
         cards.addAll(ls);
     }
 
     //---------------------------------------------------------------------------------------------
 
     public Collection<Card> remains() {
-        return Collections.unmodifiableSet(cards);
+        return Collections.unmodifiableList(cards);
     }
 
     public void take(Card c) {

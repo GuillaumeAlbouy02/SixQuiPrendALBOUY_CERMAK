@@ -6,8 +6,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class Player extends AbstractPlayer{
+    private @Getter String name;
 
-    public Player(){
+    public Player(String name){
+        this.name=name;
 
     }
 

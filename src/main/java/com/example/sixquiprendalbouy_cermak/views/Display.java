@@ -42,7 +42,7 @@ public class Display {
             }
 
             else{
-                game.createPlayers();
+                game.createPlayers(playerSpinner.getValue(), botSpinner.getValue());
             }
         });
 
