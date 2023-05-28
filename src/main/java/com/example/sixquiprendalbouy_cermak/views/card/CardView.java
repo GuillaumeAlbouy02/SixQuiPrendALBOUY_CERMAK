@@ -19,7 +19,7 @@ public class CardView {
     protected ImageView backImageView;
 
     /** may be null if unknown.. forced to back side */
-    protected Card card;
+    protected @Getter Card card;
 
     protected boolean frontSide;
 

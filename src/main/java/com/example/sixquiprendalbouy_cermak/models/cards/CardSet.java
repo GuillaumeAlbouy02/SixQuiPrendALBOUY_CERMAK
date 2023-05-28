@@ -1,10 +1,13 @@
 package com.example.sixquiprendalbouy_cermak.models.cards;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.*;
 
 public class CardSet {
 
-    private final ArrayList<Card> cards = new ArrayList<>();
+    private @Getter @Setter ArrayList<Card> cards = new ArrayList<>();
 
     //---------------------------------------------------------------------------------------------
 
