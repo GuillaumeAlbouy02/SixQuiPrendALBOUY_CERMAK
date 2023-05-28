@@ -71,4 +71,7 @@ public class CardStack {
         this.sumPenalty = card.penalty;
         this.topValue = card.value;
     }
+    public Card getFirstCard(){
+        return cards.get(0);
+    }
 }

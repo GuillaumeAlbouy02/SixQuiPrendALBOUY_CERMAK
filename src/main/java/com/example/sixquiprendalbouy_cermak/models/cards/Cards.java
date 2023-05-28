@@ -7,18 +7,25 @@ import java.util.Random;
 
 public class Cards {
 
-    public static final int MIN_CARD_VALUE = 1;
+    private static final int MIN_CARD_VALUE = 1;
     public static final int MAX_CARD_VALUE = 104;
 
-    public static final int DEFAULT_CARDS_COUNT_PER_PLAYER = 10;
+    private static final int DEFAULT_CARDS_COUNT_PER_PLAYER = 10;
 
-    public static final List<Card> cards = createCards();
+    private static final List<Card> cards = createCards();
+    private List<Card> remain;
+
+    public Cards(){
+
+        this.remain = new ArrayList<>(cards);
+
+    }
 
     public static final Card cardOf(int i) {
         return cards.get(i-1);
     }
 
-    private static List<Card> createCards() {
+    public static List<Card> createCards() {
         List<Card> res = new ArrayList<>();
         for (int i = MIN_CARD_VALUE; i <= MAX_CARD_VALUE; i++) {
             res.add(new Card(i, cardPenalty(i)));
@@ -40,13 +47,13 @@ public class Cards {
         }
     }
 
-    public static List<CardSet> distributeRandomCards(int nPlayer, Random rand) {
+    public List<CardSet> distributeRandomCards(int nPlayer, Random rand) {
         return distributeRandomCards(nPlayer, rand,  DEFAULT_CARDS_COUNT_PER_PLAYER);
     }
 
-    public static List<CardSet> distributeRandomCards(int nPlayer, Random rand, int nCards) {
+    public List<CardSet> distributeRandomCards(int nPlayer, Random rand, int nCards) {
         if (nPlayer < 0 || nPlayer > 10) throw new IllegalArgumentException();
-        List<Card> remain = new ArrayList<>(cards);
+
         List<Card>[] playerCards = new List[nPlayer];
         for (int j = 0; j < nPlayer; j++) {
             playerCards[j] = new ArrayList<>(nCards);
@@ -62,7 +69,14 @@ public class Cards {
         for (int j = 0; j < nPlayer; j++) {
             res.add(new CardSet(playerCards[j]));
         }
+        this.remain = remain;
+
         return res;
+    }
+
+    public Card takeFromRemain(Random rand){
+        int idx = rand.nextInt(remain.size());
+        return remain.remove(idx);
     }
 
 }

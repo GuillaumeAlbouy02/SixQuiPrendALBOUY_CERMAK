@@ -1,6 +1,8 @@
 package com.example.sixquiprendalbouy_cermak.views;
 
 import com.example.sixquiprendalbouy_cermak.models.Game;
+import com.example.sixquiprendalbouy_cermak.models.players.Player;
+import com.example.sixquiprendalbouy_cermak.views.card.CardView;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -13,6 +15,8 @@ import javafx.stage.Stage;
 public class Display {
     private Game game;
     private Stage stage;
+    private int cardHeight=115;
+    private int cardWidth = 65;
 
     public Display(Game game, Stage stage) {
         this.game = game;
@@ -50,6 +54,23 @@ public class Display {
         Scene scene = new Scene(layout,500,500);
         stage.setScene(scene);
         stage.show();
+
+    }
+
+    public void playerTurn(Player player){
+        VBox Layout = new VBox();
+        HBox[] stacks= new HBox[4];
+        for(int i=0;i<4;i++){
+            CardView cardView = new CardView(game.getCardStacks()[i].getFirstCard(), cardWidth,cardHeight);
+            stacks[i] = new HBox(cardView.getComponent());
+            Layout.getChildren().add(stacks[i]);
+        }
+        Scene scene = new Scene(Layout, 1000,1000);
+        stage.setScene(scene);
+
+
+
+
 
     }
 }
