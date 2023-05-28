@@ -16,4 +16,9 @@ public class Game {
     public void startGame(){
         ds.dsCreatePlayers();
     }
+
+    public void createPlayers(int nbPlayers, int nbBots){
+
+    }
 }
+
