@@ -23,7 +23,7 @@ import java.util.Objects;
  */
 public class CardStack {
 
-    private final List<Card> cards = new ArrayList<>(5);
+    private List<Card> cards = new ArrayList<>(5);
 
     @Getter // derived field, may also be recomputed each time
     private int sumPenalty;
@@ -71,7 +71,7 @@ public class CardStack {
         this.sumPenalty = card.penalty;
         this.topValue = card.value;
     }
-    public Card getFirstCard(){
-        return cards.get(0);
+    public Card getCard(int i){
+        return cards.get(i);
     }
 }

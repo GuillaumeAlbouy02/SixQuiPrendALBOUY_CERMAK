@@ -2,6 +2,7 @@ package com.example.sixquiprendalbouy_cermak.views;
 
 import com.example.sixquiprendalbouy_cermak.models.Game;
 import com.example.sixquiprendalbouy_cermak.models.cards.CardSet;
+import com.example.sixquiprendalbouy_cermak.models.cards.CardStack;
 import com.example.sixquiprendalbouy_cermak.models.players.Player;
 import com.example.sixquiprendalbouy_cermak.views.card.CardView;
 import javafx.event.Event;
@@ -71,11 +72,19 @@ public class Display {
         HBox[] stacks= new HBox[4];
         HBox yourCards = new HBox();
 
+        Label playerName = new Label(player.getName());
+        layout.getChildren().add(playerName);
+
         for(int i=0;i<4;i++){
-            CardView cardView = new CardView(game.getCardStacks()[i].getFirstCard(), cardWidth,cardHeight);
-            HBox stack = new HBox(cardView.getComponent());
+            HBox stack = new HBox();
+
+            for(int j=0;j<game.getCardStacks()[i].getCardCount();j++) {
+                CardStack realStack = game.getCardStacks()[i];
+                CardView cardView = new CardView(game.getCardStacks()[i].getCard(j), cardWidth, cardHeight);
+                stack.getChildren().add(cardView.getComponent());
+                cardView.getComponent().setOnMouseClicked(e -> onStackClicked(e, stack, playerHand, yourCards, realStack));
+            }
             stacks[i] = stack;
-            cardView.getComponent().setOnMouseClicked(e->onStackClicked(e, stack,playerHand,yourCards));
             layout.getChildren().add(stacks[i]);
         }
 
@@ -123,7 +132,7 @@ public class Display {
 
     }
 
-    private void onStackClicked(MouseEvent e, HBox stack, CardSet hand, HBox handBox){
+    private void onStackClicked(MouseEvent e, HBox stack, CardSet hand, HBox handBox, CardStack realStack){
         if(selectedCard==null){
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText("You must select a card from your hand first");
@@ -133,11 +142,14 @@ public class Display {
             Translate translate = new Translate();
             translate.setY(20);
             selectedCard.getComponent().getTransforms().add(translate);
-            selectedCard.getComponent().setOnMouseClicked(i->onStackClicked(i,stack,hand,handBox));
+            selectedCard.getComponent().setOnMouseClicked(i->onStackClicked(i,stack,hand,handBox, realStack));
             handBox.getChildren().remove(selectedCard.getComponent());
             stack.getChildren().add(selectedCard.getComponent());
             hand.take(selectedCard.getCard());
+            realStack.addMayTakeIfBelowOr6th(selectedCard.getCard());
             selectedCard = null;
+
+            game.nextTurn();
         }
 
     }

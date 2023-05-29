@@ -22,10 +22,15 @@ public class Game {
     private Cards cards;
     private @Getter CardStack[] cardStacks = new CardStack[4];
 
+    private @Getter int turn;
+    private @Getter int playerNumber;
+
     public Game(Stage stage) {
         this.stage = stage;
         this.ds = new Display(this, stage);
         this.cards=new Cards();
+        this.turn = 1;
+        this.playerNumber = 1;
     }
 
     public void startGame(){
@@ -42,7 +47,7 @@ public class Game {
 
         }
         for (int c=nbPlayers; c<nbPlayers+nbBots;c++){
-            AbstractPlayer bot = new Bot();
+            AbstractPlayer bot = new Bot("Bot"+(c-nbPlayers+1));
             players[c]=bot;
         }
         List<CardSet> hands = cards.distributeRandomCards(nbPlayers+nbBots,new Random());
@@ -58,8 +63,22 @@ public class Game {
         for (int i = 0; i<4; i++){
             cardStacks[i] = new CardStack(cards.takeFromRemain(new Random()));
         }
-        ds.playerTurn(realPlayers[0]);
+        players[playerNumber-1].turn(ds);
 
+
+    }
+
+    public void nextTurn(){
+        playerNumber=(playerNumber+1)%players.length;
+        if(playerNumber==1){
+            turn++;
+        }
+        if (playerNumber==0){
+            players[players.length-1].turn(ds);
+        }
+        else{
+            players[playerNumber-1].turn(ds);
+        }
 
     }
 }
