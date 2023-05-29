@@ -5,27 +5,40 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+/** La class Cards permet de définir l'ensemble des Cartes
+*
+*   attributs :
+*       -MIN_CARD_VALUE : represente la valeur minimal d'une carte
+*       -MAX_CARD_VALUE : represente la valeur max d'une carte
+*       -DEFAULT_CARDS_COUNT_PER_PLAYER : represente le nombre de carte distribuer pour chaque joueurs
+*       -cards : represente la liste des cartes
+*
+*   methode :
+*       -cardOf(int i ) : permet de choisir la carte i_ème de paquet de carte
+*       -createCards() : permet de crée l'ensemble du paquet de carte
+*       -cardPenalty(int number) : permet d'attribuer une pénalité en fonction du numéro de la valeur de la carte
+*       -distributeRandomCards(int nPlayer, Random rand, int nCards): permet de distribuer aux joueurs leurs cartes
+* */
+
 public class Cards {
 
-    private static final int MIN_CARD_VALUE = 1;
+    public static final int MIN_CARD_VALUE = 1;
     public static final int MAX_CARD_VALUE = 104;
 
-    private static final int DEFAULT_CARDS_COUNT_PER_PLAYER = 10;
+    public static final int DEFAULT_CARDS_COUNT_PER_PLAYER = 10;
 
-    private static final List<Card> cards = createCards();
+    public static final List<Card> cards = createCards();
     private List<Card> remain;
 
     public Cards(){
-
         this.remain = new ArrayList<>(cards);
-
     }
 
-    public static final Card cardOf(int i) {
+    public static Card cardOf(int i) {
         return cards.get(i-1);
     }
 
-    public static List<Card> createCards() {
+    private static List<Card> createCards() {
         List<Card> res = new ArrayList<>();
         for (int i = MIN_CARD_VALUE; i <= MAX_CARD_VALUE; i++) {
             res.add(new Card(i, cardPenalty(i)));
@@ -47,13 +60,13 @@ public class Cards {
         }
     }
 
-    public List<CardSet> distributeRandomCards(int nPlayer, Random rand) {
+    public static List<CardSet> distributeRandomCards(int nPlayer, Random rand) {
         return distributeRandomCards(nPlayer, rand,  DEFAULT_CARDS_COUNT_PER_PLAYER);
     }
 
-    public List<CardSet> distributeRandomCards(int nPlayer, Random rand, int nCards) {
+    public static List<CardSet> distributeRandomCards(int nPlayer, Random rand, int nCards) {
         if (nPlayer < 0 || nPlayer > 10) throw new IllegalArgumentException();
-
+        List<Card> remain = new ArrayList<>(cards);
         List<Card>[] playerCards = new List[nPlayer];
         for (int j = 0; j < nPlayer; j++) {
             playerCards[j] = new ArrayList<>(nCards);
@@ -69,8 +82,6 @@ public class Cards {
         for (int j = 0; j < nPlayer; j++) {
             res.add(new CardSet(playerCards[j]));
         }
-        this.remain = remain;
-
         return res;
     }
 

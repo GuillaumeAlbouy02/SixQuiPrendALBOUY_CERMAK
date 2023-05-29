@@ -21,9 +21,24 @@ import java.util.Objects;
  *     </li>
  * </ul>
  */
+
+/** La class CardStack permet de représenter les lignes de carte
+ *
+ *  attribut :
+ *      - cards : represente une ligne de carte
+ *      - sumPenalty : represente la somme des penalité des cartes présente sur la ligne
+ *      - topValue : represente la valeur la plus haute de la ligne
+ *
+ *  methode :
+ *      - CardStack(Card firstCard) : Initialise la ligne avec une première carte
+ *      - getCardCount() : permet de donner le nombre de carte sur la ligne
+ *      - resetWithTopCard(Card card) : permet de vider la ligne et d'y mettre la nouvelle carte
+ *      - addMayTakeIfBelowOr6th(Card c) : permet de vérifier les règles du jeu tel que le 6 qui prend ou bien
+ *      que la carte est supérieur
+ * */
 public class CardStack {
 
-    private List<Card> cards = new ArrayList<>(5);
+    private final List<Card> cards = new ArrayList<>(5);
 
     @Getter // derived field, may also be recomputed each time
     private int sumPenalty;
@@ -70,8 +85,5 @@ public class CardStack {
         this.cards.add(card);
         this.sumPenalty = card.penalty;
         this.topValue = card.value;
-    }
-    public Card getCard(int i){
-        return cards.get(i);
     }
 }

@@ -1,5 +1,13 @@
 package com.example.sixquiprendalbouy_cermak.models.cards;
 
+/**La class Card permet de définir l'objet "Carte"
+*
+*   attribut :
+*       - value : Donne la valeur de la carte comprise entre [1,104]
+*       - penality : Donne la penalité de la carte
+*
+*   methode :
+*       - toString() : permet de retourner la valeurs de la carte en chaîne de caractère*/
 
 public class Card {
 
