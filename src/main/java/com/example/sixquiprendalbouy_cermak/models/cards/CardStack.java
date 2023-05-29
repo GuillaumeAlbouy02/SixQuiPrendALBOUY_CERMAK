@@ -59,6 +59,10 @@ public class CardStack {
         return cards.size();
     }
 
+    public Card getCard(int i){
+        return cards.get(i);
+    }
+
     public List<Card> addMayTakeIfBelowOr6th(Card c) {
         Objects.requireNonNull(c);
         List<Card> res;
