@@ -17,16 +17,17 @@ import java.util.List;
 import java.util.Random;
 
 public class Game {
-    private @Getter Stage stage;
-    private @Getter Display ds;
+    private final @Getter Stage stage;
+    private final @Getter Display ds;
     private @Getter @Setter AbstractPlayer[] players;
     private Player[] realPlayers;
-    private Cards cards;
-    private @Getter CardStack[] cardStacks = new CardStack[4];
+    private final Cards cards;
+    private final @Getter CardStack[] cardStacks = new CardStack[4];
     private @Getter @Setter ArrayList<Card> playedCards;
 
-    private @Getter int turn;
-    private @Getter int playerNumber;
+    private final @Getter int turn;
+    private final @Getter int playerNumber;
+    private @Getter int currentPlayer;
 
     public Game(Stage stage) {
         this.stage = stage;
@@ -35,6 +36,7 @@ public class Game {
         this.turn = 1;
         this.playerNumber = 1;
         this.playedCards = new ArrayList<>();
+        this.currentPlayer = 0;
     }
 
     public void startGame(){
@@ -59,45 +61,36 @@ public class Game {
             players[j].setHand(hands.get(j));
         }
         play();
-
     }
 
     public void play(){
-
         for (int i = 0; i<4; i++){
             cardStacks[i] = new CardStack(cards.takeFromRemain(new Random()));
         }
-        players[playerNumber-1].turn(ds);
-
-
+        players[currentPlayer].turn(ds);
     }
 
     public void nextTurn(){
-        playerNumber=(playerNumber+1)%players.length;
-        if(playerNumber==1){
-            if (playedCards!=null){
-                endTurn(1);
-            }
-            else {
-                players[playerNumber-1].turn(ds);
-            }
-            turn++;
-            playedCards = new ArrayList<>();
-            ds.resetPlayedCards();
+        //todo : C'est pas plus simple comme ceci ?
+        currentPlayer++;
+        if(players.length > currentPlayer){
+            players[currentPlayer].turn(ds);
+        } else{
+            currentPlayer = 0;
+            players[currentPlayer].turn(ds);
+        }
+    }
 
+    public void turn(AbstractPlayer player){
+        if (player.getClass() == Player.class){
+            player.turn(ds);
+        } else {
+            player.turn(ds);
         }
-        else if (playerNumber==0){
-            players[players.length-1].turn(ds);
-        }
-        else{
-            players[playerNumber-1].turn(ds);
-        }
-
     }
 
     public void endTurn(int playerNb){
         ds.dsEndTurn(playerNb);
-
     }
 }
 

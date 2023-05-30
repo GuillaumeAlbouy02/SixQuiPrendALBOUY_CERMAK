@@ -21,11 +21,14 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 
 public class Display {
-    private Game game;
-    private Stage stage;
-    private int cardHeight = 115;
-    private int cardWidth = 65;
-    private ArrayList<CardView> playedCards;
+    private final Game game;
+    private final Stage stage;
+    private final int cardHeight = 115;
+    private final int cardWidth = 65;
+    
+
+    PlayedCardsBox playedCardsBox = new PlayedCardsBox();
+    ArrayList<CardView> playedCards = playedCardsBox.getPlayedCards();
 
     private CardView selectedCard;
     private CardSet currentSet;
@@ -35,7 +38,7 @@ public class Display {
         this.game = game;
         this.stage = stage;
         this.selectedCard = null;
-        this.playedCards = new ArrayList<>(game.getPlayerNumber());
+        playedCardsBox.setPlayedCards(new ArrayList<>(game.getPlayerNumber())) ;
     }
 
     public void dsCreatePlayers() {
@@ -73,16 +76,9 @@ public class Display {
     public void playerTurn(Player player) {
         currentSet = player.getHand();
 
-        VBox playedCardsBox = new VBox();
-        if (playedCards != null) {
-            for (int t = 0; t < playedCards.size(); t++) {
-                playedCardsBox.getChildren().add(playedCards.get(t).getComponent());
-            }
-        }
-
 
         VBox layout = new VBox();
-        HBox mainLayout = new HBox(layout, playedCardsBox);
+        HBox mainLayout = new HBox(layout, playedCardsBox.getPlayedCardBox());
 
         Button endTurn = new Button("End turn");
 
@@ -99,7 +95,6 @@ public class Display {
                 CardStack realStack = game.getCardStacks()[i];
                 CardView cardView = new CardView(game.getCardStacks()[i].getCard(j), cardWidth, cardHeight);
                 stack.getChildren().add(cardView.getComponent());
-
             }
             stacks[i] = stack;
             layout.getChildren().add(stacks[i]);
@@ -108,7 +103,7 @@ public class Display {
 
         for (int c = 0; c < currentSet.getCards().size(); c++) {
             CardView cardView = new CardView(currentSet.getCards().get(c), cardWidth, cardHeight);
-            cardView.getComponent().setOnMouseClicked(e -> onCardClicked(e, cardView, playedCardsBox, currentSet, yourCards, game.getPlayedCards()));
+            cardView.getComponent().setOnMouseClicked(e -> onCardClicked(cardView, playedCardsBox, currentSet, yourCards, game.getPlayedCards()));
             yourCards.getChildren().add(cardView.getComponent());
         }
 
@@ -120,37 +115,36 @@ public class Display {
         layout.getChildren().addAll(yourCards, endTurn);
         Scene scene = new Scene(mainLayout, 1000, 1000);
         stage.setScene(scene);
-
-
     }
 
-    private void onCardClicked(MouseEvent e, CardView cardView, VBox playedCardsBox, CardSet hand, HBox handBox, ArrayList<Card> gameCardsPlayed) {
+    private void onCardClicked(CardView cardView, PlayedCardsBox playedCardsBox, CardSet hand, HBox handBox, ArrayList<Card> gameCardsPlayed) {
+        Translate translateUp = new Translate();
+        translateUp.setY(-20);
+
+        Translate translateDown = new Translate();
+        translateDown.setY(20);
+
         if (selectedCard == null) {
             selectedCard = cardView;
-            Translate translate = new Translate();
-            translate.setY(-20);
-            selectedCard.getComponent().getTransforms().add(translate);
+            selectedCard.getComponent().getTransforms().add(translateUp);
         } else if (selectedCard != cardView) {
-            Translate translate1 = new Translate();
-            translate1.setY(20);
-            selectedCard.getComponent().getTransforms().add(translate1);
+            selectedCard.getComponent().getTransforms().add(translateDown);
             selectedCard = cardView;
-            Translate translate2 = new Translate();
-            translate2.setY(-20);
-            selectedCard.getComponent().getTransforms().add(translate2);
+            selectedCard.getComponent().getTransforms().add(translateUp);
         } else {
-            Translate translate = new Translate();
-            translate.setY(20);
-            selectedCard.getComponent().getTransforms().add(translate);
+            // Si selectedCard == cardView
+            selectedCard.getComponent().getTransforms().add(translateDown);
             selectedCard.toggleCard();
             handBox.getChildren().remove(selectedCard.getComponent());
 
             currentSet.take(selectedCard.getCard());
             if (playedCards.size() == game.getPlayerNumber()) {
-                int cardId = playedCards.size() - 1;
+
+                int cardId = playedCards.indexOf(selectedCard);
+
                 playedCards.get(cardId).toggleCard();
                 handBox.getChildren().add(playedCards.get(cardId).getComponent());
-                playedCards.get(cardId).getComponent().setOnMouseClicked(u -> onCardClicked(u, cardView, playedCardsBox, currentSet, handBox, game.getPlayedCards()));
+                playedCards.get(cardId).getComponent().setOnMouseClicked(u -> onCardClicked( cardView, playedCardsBox, currentSet, handBox, game.getPlayedCards()));
                 currentSet.add(playedCards.get(cardId).getCard());
                 playedCards.remove(cardId);
                 //playedCardsBox.getChildren().remove(cardId);
@@ -158,18 +152,14 @@ public class Display {
 
                 //TODO résoudre problème : erreur lorsque l'on clique sur une carte que l'on a remise dans la main
             }
-            playedCardsBox.getChildren().add(selectedCard.getComponent());
 
-            playedCards.add(selectedCard);
+            playedCardsBox.addCard(selectedCard);
+
             selectedCard.getComponent().setOnMouseClicked(l -> {
             });
             game.getPlayedCards().add(selectedCard.getCard());
             selectedCard = null;
-
-
         }
-
-
     }
 
     private void onStackClicked(MouseEvent e, HBox stack, CardStack realStack) {
@@ -179,8 +169,6 @@ public class Display {
             alert.showAndWait();
         }
         else {
-
-
             selectedCard.getComponent().setOnMouseClicked(i->onStackClicked(i,stack, realStack));
 
             stack.getChildren().add(selectedCard.getComponent());
@@ -189,16 +177,12 @@ public class Display {
             selectedCard = null;
 
         }
-
-
     }
 
     public void resetPlayedCards() {
         playedCards=new ArrayList<>();
 
     }
-
-
     public void dsEndTurn(int playerNb){
         selectedCard = playedCards.get(playerNb-1);
         selectedCard.toggleCard();

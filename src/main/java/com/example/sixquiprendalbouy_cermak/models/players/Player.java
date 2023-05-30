@@ -11,7 +11,6 @@ public class Player extends AbstractPlayer{
 
     public Player(String name){
         this.setName(name);
-
     }
 
     @Override
