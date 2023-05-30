@@ -1,5 +1,6 @@
 package com.example.sixquiprendalbouy_cermak.models;
 
+import com.example.sixquiprendalbouy_cermak.models.cards.Card;
 import com.example.sixquiprendalbouy_cermak.models.cards.CardSet;
 import com.example.sixquiprendalbouy_cermak.models.cards.CardStack;
 import com.example.sixquiprendalbouy_cermak.models.cards.Cards;
@@ -11,6 +12,7 @@ import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -21,6 +23,7 @@ public class Game {
     private Player[] realPlayers;
     private Cards cards;
     private @Getter CardStack[] cardStacks = new CardStack[4];
+    private @Getter @Setter ArrayList<Card> playedCards;
 
     private @Getter int turn;
     private @Getter int playerNumber;
@@ -31,6 +34,7 @@ public class Game {
         this.cards=new Cards();
         this.turn = 1;
         this.playerNumber = 1;
+        this.playedCards = new ArrayList<>();
     }
 
     public void startGame(){
@@ -71,14 +75,28 @@ public class Game {
     public void nextTurn(){
         playerNumber=(playerNumber+1)%players.length;
         if(playerNumber==1){
+            if (playedCards!=null){
+                endTurn(1);
+            }
+            else {
+                players[playerNumber-1].turn(ds);
+            }
             turn++;
+            playedCards = new ArrayList<>();
+            ds.resetPlayedCards();
+
         }
-        if (playerNumber==0){
+        else if (playerNumber==0){
             players[players.length-1].turn(ds);
         }
         else{
             players[playerNumber-1].turn(ds);
         }
+
+    }
+
+    public void endTurn(int playerNb){
+        ds.dsEndTurn(playerNb);
 
     }
 }
