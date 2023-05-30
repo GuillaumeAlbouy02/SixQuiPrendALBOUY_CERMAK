@@ -10,8 +10,8 @@ import java.util.*;
  *      - cards : la main d'un joueur
  *  methode :
  *      - CardSet(Collection<Card> ls) : constructeur de la class
- *      - remains() : permet de récupéré la main d'un joueurs sur une autre classe
- *      - take(Card c) : permet de retiré une carte de la liste
+ *      - remains() : permet de récupérer la main d'un joueur sur une autre classe
+ *      - take(Card c) : permet de retirer une carte de la liste
  * */
 
 public class CardSet {
@@ -33,6 +33,10 @@ public class CardSet {
     public void take(Card c) {
         boolean remove = cards.remove(c);
         if (!remove) throw new IllegalArgumentException();
+    }
+
+    public void add(Card c){
+        this.cards.add(c);
     }
 
 }
