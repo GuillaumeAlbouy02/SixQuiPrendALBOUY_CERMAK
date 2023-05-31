@@ -205,6 +205,9 @@ public class Display {
 
         }
         Button next = new Button("Next Player");
+        playerNb++;
+        int nb = playerNb;
+        next.setOnAction(e->game.endTurn(nb));
         layout.getChildren().add(selectedCard.getComponent());
         layout.getChildren().add(next);
 
