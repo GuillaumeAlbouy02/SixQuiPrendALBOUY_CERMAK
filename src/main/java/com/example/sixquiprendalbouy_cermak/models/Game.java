@@ -25,15 +25,15 @@ public class Game {
     private final @Getter CardStack[] cardStacks = new CardStack[4];
     private @Getter @Setter ArrayList<Card> playedCards;
 
-    private final @Getter int turn;
-    private final @Getter int playerNumber;
+    private @Getter int turn;
+    private @Getter int playerNumber;
     private @Getter int currentPlayer;
 
     public Game(Stage stage) {
         this.stage = stage;
         this.ds = new Display(this, stage);
         this.cards=new Cards();
-        this.turn = 1;
+        this.turn = 2;
         this.playerNumber = 1;
         this.playedCards = new ArrayList<>();
         this.currentPlayer = 0;
@@ -71,13 +71,24 @@ public class Game {
     }
 
     public void nextTurn(){
-        //todo : C'est pas plus simple comme ceci ?
+        //todo : C'est pas plus simple comme ceci ? non, ça marche plus
         currentPlayer++;
+        playerNumber++; //TODO en fait toutes les autres fonctions utilisent playerNumber donc si on arrête de l'utiliser, forcément ça marche plus
         if(players.length > currentPlayer){
-            players[currentPlayer].turn(ds);
+
+
+                players[currentPlayer].turn(ds);
+
         } else{
             currentPlayer = 0;
-            players[currentPlayer].turn(ds);
+            playerNumber=1;
+            turn++;
+            if ( turn!=1){
+                endTurn(1);
+            }
+            else {
+                players[currentPlayer].turn(ds);
+            }
         }
     }
 

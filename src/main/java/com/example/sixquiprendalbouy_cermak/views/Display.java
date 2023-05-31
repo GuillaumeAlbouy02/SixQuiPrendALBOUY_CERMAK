@@ -138,15 +138,16 @@ public class Display {
             handBox.getChildren().remove(selectedCard.getComponent());
 
             currentSet.take(selectedCard.getCard());
-            if (playedCards.size() == game.getPlayerNumber()) {
+            if (playedCardsBox.getPlayedCards().size() == game.getPlayerNumber()) {
 
-                int cardId = playedCards.indexOf(selectedCard);
+              //  int cardId = playedCardsBox.getPlayedCards().indexOf(selectedCard); non car la selectedCard a changé losqu'on a cliqué dessus
+                int cardId = playedCardsBox.getPlayedCards().size()-1;
 
-                playedCards.get(cardId).toggleCard();
-                handBox.getChildren().add(playedCards.get(cardId).getComponent());
-                playedCards.get(cardId).getComponent().setOnMouseClicked(u -> onCardClicked( cardView, playedCardsBox, currentSet, handBox, game.getPlayedCards()));
-                currentSet.add(playedCards.get(cardId).getCard());
-                playedCards.remove(cardId);
+                playedCardsBox.getPlayedCards().get(cardId).toggleCard();
+                handBox.getChildren().add(playedCardsBox.getPlayedCards().get(cardId).getComponent());
+                playedCardsBox.getPlayedCards().get(cardId).getComponent().setOnMouseClicked(u -> onCardClicked( cardView, playedCardsBox, currentSet, handBox, game.getPlayedCards()));
+                currentSet.add(playedCardsBox.getPlayedCards().get(cardId).getCard());
+                playedCardsBox.getPlayedCards().remove(cardId);
                 //playedCardsBox.getChildren().remove(cardId);
                 game.getPlayedCards().remove(cardId);
 
@@ -184,7 +185,7 @@ public class Display {
 
     }
     public void dsEndTurn(int playerNb){
-        selectedCard = playedCards.get(playerNb-1);
+        selectedCard = playedCardsBox.getPlayedCards().get(playerNb-1);
         selectedCard.toggleCard();
         VBox layout = new VBox();
         HBox[] stacks = new HBox[4];
