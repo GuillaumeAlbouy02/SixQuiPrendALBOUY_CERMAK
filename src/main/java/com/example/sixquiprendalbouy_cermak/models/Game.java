@@ -26,17 +26,15 @@ public class Game {
     private @Getter @Setter ArrayList<Card> playedCards;
 
     private @Getter int turn;
-    private @Getter int playerNumber;
-    private @Getter int currentPlayer;
+    private @Getter int playerID;
 
     public Game(Stage stage) {
         this.stage = stage;
         this.ds = new Display(this, stage);
         this.cards=new Cards();
         this.turn = 2;
-        this.playerNumber = 1;
-        this.playedCards = new ArrayList<>();
-        this.currentPlayer = 0;
+        this.playerID = 0;
+        this.playedCards = new ArrayList<>();;
     }
 
     public void startGame(){
@@ -67,37 +65,29 @@ public class Game {
         for (int i = 0; i<4; i++){
             cardStacks[i] = new CardStack(cards.takeFromRemain(new Random()));
         }
-        players[currentPlayer].turn(ds);
+        players[playerID].turn(ds);
     }
 
     public void nextTurn(){
         //todo : C'est pas plus simple comme ceci ? non, ça marche plus
-        currentPlayer++;
-        playerNumber++; //TODO en fait toutes les autres fonctions utilisent playerNumber donc si on arrête de l'utiliser, forcément ça marche plus
-        if(players.length > currentPlayer){
-
-
-                players[currentPlayer].turn(ds);
-
-        } else{
-            currentPlayer = 0;
-            playerNumber=1;
-            turn++;
-            if ( turn!=1){
-                endTurn(1);
-            }
-            else {
-                players[currentPlayer].turn(ds);
-            }
-        }
+        playerID++; //TODO en fait toutes les autres fonctions utilisent playerNumber donc si on arrête de l'utiliser, forcément ça marche plus
+        if(players.length <= playerID){
+            playerID = 0;
+            ds.dropAllPlayedCardInStacks();
+           }
+        turn(players[playerID]);
     }
 
     public void turn(AbstractPlayer player){
-        if (player.getClass() == Player.class){
-            player.turn(ds);
+        if (player.getHand().getCards().size() == 0){
+            endGame();
         } else {
             player.turn(ds);
         }
+    }
+
+    public void endGame(){
+        // Faut faire une fonction qui termine le jeu
     }
 
     public void endTurn(int playerNb){

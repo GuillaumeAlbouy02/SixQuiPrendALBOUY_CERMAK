@@ -12,4 +12,8 @@ public abstract class AbstractPlayer {
 
     public abstract void turn(Display ds);
 
+    public int addScore(int i){
+        return score+i;
+    }
+
 }

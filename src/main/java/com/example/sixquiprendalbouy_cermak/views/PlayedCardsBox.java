@@ -1,28 +1,29 @@
 package com.example.sixquiprendalbouy_cermak.views;
 
+import com.example.sixquiprendalbouy_cermak.models.players.AbstractPlayer;
 import com.example.sixquiprendalbouy_cermak.views.card.CardView;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.TreeMap;
+import java.util.*;
 
-public class PlayedCardsBox {
-    private final @Getter VBox playedCardBox = new VBox();
+public class PlayedCardsBox extends VBox {
     /*private @Setter @Getter TreeMap<CardView,Integer> playedCards = new TreeMap<>(this::compare);*/
-    private @Getter @Setter ArrayList<CardView> playedCards = new ArrayList<>();
 
-    public void addCard(CardView cardView){
-        playedCardBox.getChildren().add(cardView.getComponent());
+    private @Setter @Getter TreeMap<String, AbstractPlayer> treePlayedCards = new TreeMap<>();
+    private @Setter @Getter ArrayList<CardView> playedCards = new ArrayList<>();
+
+    public void addCard(CardView cardView, AbstractPlayer player){
+        this.getChildren().add(cardView.getComponent());
         playedCards.add(cardView);
+        cardView.toggleCard();
+        treePlayedCards.put(cardView.getCard().toString(), player);
     }
 
-    public int compare(CardView one, CardView two){
-        Integer uno = one.getCard().value;
-        Integer dos = two.getCard().value;
-        return uno.compareTo(dos);
-
+    public void removeCard(CardView cardView){
+        this.getChildren().remove(cardView.getComponent());
+        playedCards.remove(cardView);
+        cardView.toggleCard();
     }
 }

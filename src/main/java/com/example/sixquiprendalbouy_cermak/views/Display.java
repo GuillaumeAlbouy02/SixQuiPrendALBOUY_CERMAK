@@ -4,6 +4,7 @@ import com.example.sixquiprendalbouy_cermak.models.Game;
 import com.example.sixquiprendalbouy_cermak.models.cards.Card;
 import com.example.sixquiprendalbouy_cermak.models.cards.CardSet;
 import com.example.sixquiprendalbouy_cermak.models.cards.CardStack;
+import com.example.sixquiprendalbouy_cermak.models.players.AbstractPlayer;
 import com.example.sixquiprendalbouy_cermak.models.players.Player;
 import com.example.sixquiprendalbouy_cermak.views.card.CardView;
 import javafx.event.Event;
@@ -19,26 +20,28 @@ import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 public class Display {
     private final Game game;
     private final Stage stage;
     private final int cardHeight = 115;
     private final int cardWidth = 65;
-    
+
 
     PlayedCardsBox playedCardsBox = new PlayedCardsBox();
     ArrayList<CardView> playedCards = playedCardsBox.getPlayedCards();
 
     private CardView selectedCard;
     private CardSet currentSet;
+    private Stack[] allStack = new Stack[4];
 
 
     public Display(Game game, Stage stage) {
         this.game = game;
         this.stage = stage;
         this.selectedCard = null;
-        playedCardsBox.setPlayedCards(new ArrayList<>(game.getPlayerNumber())) ;
+        playedCardsBox.setPlayedCards(new ArrayList<>(game.getPlayerID()));
     }
 
     public void dsCreatePlayers() {
@@ -73,51 +76,50 @@ public class Display {
 
     }
 
+    public VBox initCardStack(){
+        int i = 0;
+        VBox layout = new VBox();
+        for(CardStack cardStack: game.getCardStacks()){
+            Stack stack = new Stack(cardStack);
+            for(Card card: cardStack.getCards()){
+                CardView cardView = new CardView(card,cardWidth,cardHeight);
+                stack.simpleAdd(cardView);
+            }
+            layout.getChildren().add(stack);
+            allStack[i] = stack;
+            game.getCardStacks()[i] = stack.getCardStack();
+            i++;
+        }
+
+        return layout;
+    }
+
+
     public void playerTurn(Player player) {
         currentSet = player.getHand();
 
+        VBox layout = initCardStack();
+        HBox mainLayout = new HBox(layout, playedCardsBox);
 
-        VBox layout = new VBox();
-        HBox mainLayout = new HBox(layout, playedCardsBox.getPlayedCardBox());
-
-        Button endTurn = new Button("End turn");
-
-        HBox[] stacks = new HBox[4];
         HBox yourCards = new HBox();
 
         Label playerName = new Label(player.getName());
         layout.getChildren().add(playerName);
 
-        for (int i = 0; i < 4; i++) {
-            HBox stack = new HBox();
-
-            for (int j = 0; j < game.getCardStacks()[i].getCardCount(); j++) {
-                CardStack realStack = game.getCardStacks()[i];
-                CardView cardView = new CardView(game.getCardStacks()[i].getCard(j), cardWidth, cardHeight);
-                stack.getChildren().add(cardView.getComponent());
-            }
-            stacks[i] = stack;
-            layout.getChildren().add(stacks[i]);
-        }
-
-
         for (int c = 0; c < currentSet.getCards().size(); c++) {
             CardView cardView = new CardView(currentSet.getCards().get(c), cardWidth, cardHeight);
-            cardView.getComponent().setOnMouseClicked(e -> onCardClicked(cardView, playedCardsBox, currentSet, yourCards, game.getPlayedCards()));
+            cardView.getComponent().setOnMouseClicked(e -> onCardClicked(cardView, playedCardsBox, player, yourCards, game.getPlayedCards()));
             yourCards.getChildren().add(cardView.getComponent());
         }
 
 
-        endTurn.setOnAction(e -> {
-            game.nextTurn();
-        });
-
-        layout.getChildren().addAll(yourCards, endTurn);
+        layout.getChildren().addAll(yourCards);
         Scene scene = new Scene(mainLayout, 1000, 1000);
         stage.setScene(scene);
     }
 
-    private void onCardClicked(CardView cardView, PlayedCardsBox playedCardsBox, CardSet hand, HBox handBox, ArrayList<Card> gameCardsPlayed) {
+
+    private void onCardClicked(CardView cardView, PlayedCardsBox playedCardsBox, AbstractPlayer player, HBox handBox, ArrayList<Card> gameCardsPlayed) {
         Translate translateUp = new Translate();
         translateUp.setY(-20);
 
@@ -134,86 +136,111 @@ public class Display {
         } else {
             // Si selectedCard == cardView
             selectedCard.getComponent().getTransforms().add(translateDown);
-            selectedCard.toggleCard();
             handBox.getChildren().remove(selectedCard.getComponent());
-
             currentSet.take(selectedCard.getCard());
-            if (playedCardsBox.getPlayedCards().size() == game.getPlayerNumber()) {
+
+            /*
+            Pour l'instant est il vraiment utile de récupéré une carte déjà jouer ???
+
+            if (playedCardsBox.getPlayedCards().size() == game.getPlayerID()) {
 
               //  int cardId = playedCardsBox.getPlayedCards().indexOf(selectedCard); non car la selectedCard a changé losqu'on a cliqué dessus
                 int cardId = playedCardsBox.getPlayedCards().size()-1;
 
                 playedCardsBox.getPlayedCards().get(cardId).toggleCard();
                 handBox.getChildren().add(playedCardsBox.getPlayedCards().get(cardId).getComponent());
-                playedCardsBox.getPlayedCards().get(cardId).getComponent().setOnMouseClicked(u -> onCardClicked( cardView, playedCardsBox, currentSet, handBox, game.getPlayedCards()));
+                playedCardsBox.getPlayedCards().get(cardId).getComponent().setOnMouseClicked(u -> onCardClicked( cardView, playedCardsBox, player, handBox, game.getPlayedCards()));
                 currentSet.add(playedCardsBox.getPlayedCards().get(cardId).getCard());
                 playedCardsBox.getPlayedCards().remove(cardId);
-                //playedCardsBox.getChildren().remove(cardId);
                 game.getPlayedCards().remove(cardId);
 
                 //TODO résoudre problème : erreur lorsque l'on clique sur une carte que l'on a remise dans la main
-            }
+            }*/
 
-            playedCardsBox.addCard(selectedCard);
+            playedCardsBox.addCard(selectedCard, player);
 
             selectedCard.getComponent().setOnMouseClicked(l -> {
             });
             game.getPlayedCards().add(selectedCard.getCard());
             selectedCard = null;
+            game.nextTurn();
         }
     }
 
-    private void onStackClicked(MouseEvent e, HBox stack, CardStack realStack) {
-        if(selectedCard==null){
+    private void onStackClicked(MouseEvent e, Stack stack, CardStack realStack) {
+        if (selectedCard == null) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText("You must select a card from your hand first");
             alert.showAndWait();
-        }
-        else {
-            selectedCard.getComponent().setOnMouseClicked(i->onStackClicked(i,stack, realStack));
-
-            stack.getChildren().add(selectedCard.getComponent());
-
-            realStack.addMayTakeIfBelowOr6th(selectedCard.getCard());
+        } else {
+            selectedCard.getComponent().setOnMouseClicked(i -> onStackClicked(i, stack, realStack));
+            stack.addInStack(selectedCard, playedCardsBox);
             selectedCard = null;
 
         }
     }
 
     public void resetPlayedCards() {
-        playedCards=new ArrayList<>();
+        playedCards = new ArrayList<>();
 
     }
-    public void dsEndTurn(int playerNb){
-        selectedCard = playedCardsBox.getPlayedCards().get(playerNb-1);
+
+    public void dsEndTurn(int playerNb) {
+        selectedCard = playedCardsBox.getPlayedCards().get(playerNb - 1);
         selectedCard.toggleCard();
         VBox layout = new VBox();
-        HBox[] stacks = new HBox[4];
+        Stack[] stacks = new Stack[4];
+        int i = 0;
+        for (CardStack cardStack : game.getCardStacks()) {
+            Stack stack = new Stack(cardStack);
 
-        for (int i = 0; i < 4; i++) {
-            HBox stack = new HBox();
-
-            for (int j = 0; j < game.getCardStacks()[i].getCardCount(); j++) {
-                CardStack realStack = game.getCardStacks()[i];
-                CardView cardView = new CardView(game.getCardStacks()[i].getCard(j), cardWidth, cardHeight);
+            for (int j = 0; j < cardStack.getCardCount(); j++) {
+                CardStack realStack = cardStack;
+                CardView cardView = new CardView(cardStack.getCard(j), cardWidth, cardHeight);
                 stack.getChildren().add(cardView.getComponent());
                 cardView.getComponent().setOnMouseClicked(e -> onStackClicked(e, stack, realStack));
             }
             stacks[i] = stack;
-            layout.getChildren().add(stacks[i]);
-
-
+            layout.getChildren().add(stack);
+            i++;
         }
         Button next = new Button("Next Player");
         playerNb++;
         int nb = playerNb;
-        next.setOnAction(e->game.endTurn(nb));
+        next.setOnAction(e -> game.endTurn(nb));
         layout.getChildren().add(selectedCard.getComponent());
         layout.getChildren().add(next);
 
-        Scene sceneEnd = new Scene(layout,1000,1000);
+        Scene sceneEnd = new Scene(layout, 1000, 1000);
         stage.setScene(sceneEnd);
+    }
 
+    public void dropAllPlayedCardInStacks() {
+
+        Stack goodStack;
+        ArrayList<CardView> playedCards = (ArrayList<CardView>) playedCardsBox.getPlayedCards().clone();
+        for (CardView card : playedCards) {
+            goodStack = compareWithStackValues(card);
+            if (goodStack != null) {
+                goodStack.addInStack(card, playedCardsBox);
+                playedCardsBox.removeCard(card);
+            }
+        }
+    }
+
+    public Stack compareWithStackValues(CardView cardView) {
+        int score;
+        int min = 104; // 104 est la valeur maximum qui peut attendre la difference entre deux carte
+        Stack goodStack = null;
+        int cardValues = cardView.getCard().value;
+        for (Stack stack : allStack) {
+            score = cardValues - stack.getTopValue();
+            if (score > 0 && score < min) {
+                goodStack = stack;
+                min = score;
+            }
+        }
+        return goodStack;
     }
 }
 

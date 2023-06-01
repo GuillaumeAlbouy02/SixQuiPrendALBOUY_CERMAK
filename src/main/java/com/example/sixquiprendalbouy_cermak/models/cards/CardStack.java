@@ -38,6 +38,7 @@ import java.util.Objects;
  * */
 public class CardStack {
 
+    @Getter
     private final List<Card> cards = new ArrayList<>(5);
 
     @Getter // derived field, may also be recomputed each time
@@ -85,7 +86,7 @@ public class CardStack {
         return res;
     }
 
-    protected void resetWithTopCard(Card card) {
+    public void resetWithTopCard(Card card) {
         this.cards.add(card);
         this.sumPenalty = card.penalty;
         this.topValue = card.value;
