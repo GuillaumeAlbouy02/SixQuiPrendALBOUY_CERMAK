@@ -13,6 +13,7 @@ public abstract class AbstractPlayer {
     public abstract void turn(Display ds);
 
     public int addScore(int i){
+        this.score +=i;
         return score+i;
     }
 

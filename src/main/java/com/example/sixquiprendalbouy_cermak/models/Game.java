@@ -21,7 +21,7 @@ public class Game {
     private final @Getter Stage stage;
     private final @Getter Display ds;
     private @Getter @Setter AbstractPlayer[] players;
-    private Player[] realPlayers;
+    private @Getter Player[] realPlayers;
     private final Cards cards;
     private final @Getter CardStack[] cardStacks = new CardStack[4];
     private @Getter @Setter ArrayList<Card> playedCards;
@@ -70,8 +70,8 @@ public class Game {
     }
 
     public void nextTurn(){
-        //todo : C'est pas plus simple comme ceci ? non, ça marche plus
-        playerID++; //TODO en fait toutes les autres fonctions utilisent playerNumber donc si on arrête de l'utiliser, forcément ça marche plus
+
+        playerID++;
         if(players.length <= playerID){
             playerID = 0;
             ds.dropAllPlayedCardInStacks((ArrayList<CardView>) ds.getPlayedCardsBox().getPlayedCards().clone());

@@ -35,7 +35,7 @@ public class Stack extends HBox {
     }
 
     public void addInStack(CardView cardView, PlayedCardsBox playedCardsBox){
-        List<Card> res = cardStack.addMayTakeIfBelowOr6th(cardView.getCard());
+        List<Card> res = cardStack.addMayTakeIfBelowOr6th(cardView.getCard());//TODO ajouter le score de res au joueur correspondant
         cardViews.add(cardView);
         if (res == null){
             System.out.println(res);
@@ -45,7 +45,7 @@ public class Stack extends HBox {
             this.getChildren().add(cardView.getComponent());
         }
     }
-    public void resetStack(CardView card){
+    public void resetStack(CardView card){//TODO ajouter le score de res au joueur correspondant
         cardStack.addMayTakeIfBelowOr6th(card.getCard());
 
     }

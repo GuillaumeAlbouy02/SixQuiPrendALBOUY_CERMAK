@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class Display {
@@ -155,7 +156,6 @@ public class Display {
                 playedCardsBox.getPlayedCards().remove(cardId);
                 game.getPlayedCards().remove(cardId);
 
-                //TODO résoudre problème : erreur lorsque l'on clique sur une carte que l'on a remise dans la main
             }*/
 
             playedCardsBox.addCard(selectedCard, player);
@@ -168,14 +168,19 @@ public class Display {
         }
     }
 
-    private void onStackClicked(MouseEvent e, Stack stack, CardStack realStack) {
+    private void onStackClicked(MouseEvent e, Stack stack, CardStack realStack, Player player) {
         if (selectedCard == null) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText("You must select a card from your hand first");
             alert.showAndWait();
         }else {
             //selectedCard.getComponent().setOnMouseClicked(i -> onStackClicked(i, stack, realStack));
-            realStack.addMayTakeIfBelowOr6th(selectedCard.getCard());
+            List<Card> cardList =realStack.addMayTakeIfBelowOr6th(selectedCard.getCard());
+            if (cardList.size()!=0){
+                for (Card card : cardList){
+                    game.getRealPlayers()[0].addScore(card.penalty);
+                }
+            }
             //stack.resetStack(selectedCard);
             playedCardsBox.removeCard(selectedCard);
             selectedCard = null;
@@ -203,7 +208,7 @@ public class Display {
                 CardStack realStack = cardStack;
                 CardView cardView = new CardView(cardStack.getCard(j), cardWidth, cardHeight);
                 stack.getChildren().add(cardView.getComponent());
-                cardView.getComponent().setOnMouseClicked(e -> onStackClicked(e, stack, realStack));
+                //cardView.getComponent().setOnMouseClicked(e -> onStackClicked(e, stack, realStack, game.getPlayers()[playerNb]));
             }
             stacks[i] = stack;
             layout.getChildren().add(stack);
@@ -270,7 +275,7 @@ public class Display {
                 CardStack realStack = cardStack;
                 CardView cardView = new CardView(cardStack.getCard(j), cardWidth, cardHeight);
                 stack.getChildren().add(cardView.getComponent());
-                cardView.getComponent().setOnMouseClicked(e -> onStackClicked(e, stack, realStack));
+                cardView.getComponent().setOnMouseClicked(e -> onStackClicked(e, stack, realStack, game.getRealPlayers()[game.getRealPlayers().length-cardStack.getCardCount()]));
             }
             stacks[i] = stack;
             layout.getChildren().add(stack);
