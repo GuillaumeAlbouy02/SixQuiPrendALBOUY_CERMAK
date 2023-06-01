@@ -76,11 +76,9 @@ public class Game {
         if(players.length <= playerID){
             playerID = 0;
             ds.dropAllPlayedCardInStacks((TreeMap<CardView, AbstractPlayer>) ds.getPlayedCardsBox().getPlayedCards().clone());
-           }
-        else {
+           } else{
             turn(players[playerID]);
         }
-
     }
 
     public void turn(AbstractPlayer player){
@@ -92,7 +90,11 @@ public class Game {
     }
 
     public void endGame(){
-        // Faut faire une fonction qui termine le jeu
+        TreeMap<Integer,AbstractPlayer> scoreTab = new TreeMap<Integer, AbstractPlayer>();
+        for(AbstractPlayer player:players){
+            scoreTab.put(player.getScore(),player);
+        }
+        ds.dsEndGame(scoreTab);
     }
 
     public void endTurn(int playerNb){

@@ -2,8 +2,7 @@ package com.example.sixquiprendalbouy_cermak;
 
 import com.example.sixquiprendalbouy_cermak.models.Game;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
+
 import javafx.stage.Stage;
 
 import java.io.IOException;

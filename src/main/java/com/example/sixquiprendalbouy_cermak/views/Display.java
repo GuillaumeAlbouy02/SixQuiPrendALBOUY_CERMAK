@@ -14,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
@@ -21,6 +22,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class Display {
@@ -141,23 +143,6 @@ public class Display {
             handBox.getChildren().remove(selectedCard.getComponent());
             currentSet.take(selectedCard.getCard());
 
-            /*
-            Pour l'instant est il vraiment utile de récupéré une carte déjà jouer ???
-
-            if (playedCardsBox.getPlayedCards().size() == game.getPlayerID()) {
-
-              //  int cardId = playedCardsBox.getPlayedCards().indexOf(selectedCard); non car la selectedCard a changé losqu'on a cliqué dessus
-                int cardId = playedCardsBox.getPlayedCards().size()-1;
-
-                playedCardsBox.getPlayedCards().get(cardId).toggleCard();
-                handBox.getChildren().add(playedCardsBox.getPlayedCards().get(cardId).getComponent());
-                playedCardsBox.getPlayedCards().get(cardId).getComponent().setOnMouseClicked(u -> onCardClicked( cardView, playedCardsBox, player, handBox, game.getPlayedCards()));
-                currentSet.add(playedCardsBox.getPlayedCards().get(cardId).getCard());
-                playedCardsBox.getPlayedCards().remove(cardId);
-                game.getPlayedCards().remove(cardId);
-
-            }*/
-
             playedCardsBox.addCard(selectedCard, player);
 
             selectedCard.getComponent().setOnMouseClicked(l -> {
@@ -175,25 +160,15 @@ public class Display {
             alert.showAndWait();
         }else {
             //selectedCard.getComponent().setOnMouseClicked(i -> onStackClicked(i, stack, realStack));
-            List<Card> cardList =realStack.addMayTakeIfBelowOr6th(selectedCard.getCard());
-            if (cardList.size()!=0){
-                for (Card card : cardList){
-                    player.addScore(card.penalty);
-                }
-            }
+            stack.addInStack(selectedCard,playedCardsBox);
+
             //stack.resetStack(selectedCard);
             playedCardsBox.removeCard(selectedCard);
             selectedCard = null;
             dropAllPlayedCardInStacks(playedCardsBox.getPlayedCards());
-
-
         }
     }
 
-    public void resetPlayedCards() {
-        playedCards = new TreeMap<CardView,AbstractPlayer>();
-
-    }
 
     public void dsEndTurn(int playerNb) {
         selectedCard = playedCards.firstKey();
@@ -245,7 +220,7 @@ public class Display {
             //}
         }
         else{
-            game.getPlayers()[0].turn(this);
+            game.turn(game.getPlayers()[game.getPlayerID()]);
         }
     }
 
@@ -293,6 +268,25 @@ public class Display {
         layout.getChildren().add(next);
 
         Scene sceneEnd = new Scene(layout, 1000, 1000);
+        stage.setScene(sceneEnd);
+    }
+
+    public void dsEndGame(TreeMap<Integer,AbstractPlayer> scoreTab){
+        VBox dsScoreTab = new VBox();
+        Set<Integer> keys = scoreTab.keySet();
+        for(Integer key:keys){
+            Label scorePlayer = new Label(scoreTab.get(key).getName() + " have " + key + "Ox");
+            dsScoreTab.getChildren().add(scorePlayer);
+        }
+
+        Button newGame = new Button("New Game");
+        newGame.setOnAction(e ->{
+            game.startGame();
+        });
+
+        dsScoreTab.getChildren().add(newGame);
+
+        Scene sceneEnd = new Scene(dsScoreTab, 1000, 1000);
         stage.setScene(sceneEnd);
     }
 }
