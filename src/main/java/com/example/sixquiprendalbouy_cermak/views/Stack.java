@@ -45,4 +45,8 @@ public class Stack extends HBox {
             this.getChildren().add(cardView.getComponent());
         }
     }
+    public void resetStack(CardView card){
+        cardStack.addMayTakeIfBelowOr6th(card.getCard());
+
+    }
 }

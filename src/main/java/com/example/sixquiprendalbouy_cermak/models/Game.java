@@ -8,6 +8,7 @@ import com.example.sixquiprendalbouy_cermak.models.players.AbstractPlayer;
 import com.example.sixquiprendalbouy_cermak.models.players.Bot;
 import com.example.sixquiprendalbouy_cermak.models.players.Player;
 import com.example.sixquiprendalbouy_cermak.views.Display;
+import com.example.sixquiprendalbouy_cermak.views.card.CardView;
 import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.Setter;
@@ -73,9 +74,12 @@ public class Game {
         playerID++; //TODO en fait toutes les autres fonctions utilisent playerNumber donc si on arrête de l'utiliser, forcément ça marche plus
         if(players.length <= playerID){
             playerID = 0;
-            ds.dropAllPlayedCardInStacks();
+            ds.dropAllPlayedCardInStacks((ArrayList<CardView>) ds.getPlayedCardsBox().getPlayedCards().clone());
            }
-        turn(players[playerID]);
+        else {
+            turn(players[playerID]);
+        }
+
     }
 
     public void turn(AbstractPlayer player){

@@ -18,6 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -29,7 +30,7 @@ public class Display {
     private final int cardWidth = 65;
 
 
-    PlayedCardsBox playedCardsBox = new PlayedCardsBox();
+    @Getter PlayedCardsBox playedCardsBox = new PlayedCardsBox();
     ArrayList<CardView> playedCards = playedCardsBox.getPlayedCards();
 
     private CardView selectedCard;
@@ -172,10 +173,14 @@ public class Display {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText("You must select a card from your hand first");
             alert.showAndWait();
-        } else {
-            selectedCard.getComponent().setOnMouseClicked(i -> onStackClicked(i, stack, realStack));
-            stack.addInStack(selectedCard, playedCardsBox);
+        }else {
+            //selectedCard.getComponent().setOnMouseClicked(i -> onStackClicked(i, stack, realStack));
+            realStack.addMayTakeIfBelowOr6th(selectedCard.getCard());
+            //stack.resetStack(selectedCard);
+            playedCardsBox.removeCard(selectedCard);
             selectedCard = null;
+            dropAllPlayedCardInStacks(playedCardsBox.getPlayedCards());
+
 
         }
     }
@@ -215,16 +220,25 @@ public class Display {
         stage.setScene(sceneEnd);
     }
 
-    public void dropAllPlayedCardInStacks() {
+    public void dropAllPlayedCardInStacks(ArrayList<CardView> playedCards) {
 
         Stack goodStack;
-        ArrayList<CardView> playedCards = (ArrayList<CardView>) playedCardsBox.getPlayedCards().clone();
-        for (CardView card : playedCards) {
-            goodStack = compareWithStackValues(card);
-            if (goodStack != null) {
-                goodStack.addInStack(card, playedCardsBox);
-                playedCardsBox.removeCard(card);
-            }
+        //ArrayList<CardView> playedCards = (ArrayList<CardView>) playedCardsBox.getPlayedCards().clone();
+        if(playedCards.size()!=0) {
+            CardView card = playedCards.get(0);
+            //for (CardView card : playedCards) {
+                goodStack = compareWithStackValues(card);
+                if (goodStack != null) {
+                    goodStack.addInStack(card, playedCardsBox);
+                    playedCardsBox.removeCard(card);
+                    dropAllPlayedCardInStacks(playedCardsBox.getPlayedCards());
+                } else {
+                    chooseStack(card);
+                }
+            //}
+        }
+        else{
+            game.getPlayers()[0].turn(this);
         }
     }
 
@@ -241,6 +255,38 @@ public class Display {
             }
         }
         return goodStack;
+    }
+
+    public void chooseStack(CardView card){
+        selectedCard = card;
+        selectedCard.toggleCard();
+        VBox layout = new VBox();
+        Stack[] stacks = new Stack[4];
+        int i = 0;
+        for (CardStack cardStack : game.getCardStacks()) {
+            Stack stack = new Stack(cardStack);
+
+            for (int j = 0; j < cardStack.getCardCount(); j++) {
+                CardStack realStack = cardStack;
+                CardView cardView = new CardView(cardStack.getCard(j), cardWidth, cardHeight);
+                stack.getChildren().add(cardView.getComponent());
+                cardView.getComponent().setOnMouseClicked(e -> onStackClicked(e, stack, realStack));
+            }
+            stacks[i] = stack;
+            layout.getChildren().add(stack);
+            i++;
+        }
+        Button next = new Button("Next Player");
+
+        next.setOnAction(e -> {
+            playedCardsBox.removeCard(card);
+            dropAllPlayedCardInStacks(playedCardsBox.getPlayedCards());
+        });
+        layout.getChildren().add(selectedCard.getComponent());
+        layout.getChildren().add(next);
+
+        Scene sceneEnd = new Scene(layout, 1000, 1000);
+        stage.setScene(sceneEnd);
     }
 }
 
