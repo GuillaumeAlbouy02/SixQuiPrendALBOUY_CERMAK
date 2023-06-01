@@ -16,6 +16,7 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.TreeMap;
 
 public class Game {
     private final @Getter Stage stage;
@@ -74,7 +75,7 @@ public class Game {
         playerID++;
         if(players.length <= playerID){
             playerID = 0;
-            ds.dropAllPlayedCardInStacks((ArrayList<CardView>) ds.getPlayedCardsBox().getPlayedCards().clone());
+            ds.dropAllPlayedCardInStacks((TreeMap<CardView, AbstractPlayer>) ds.getPlayedCardsBox().getPlayedCards().clone());
            }
         else {
             turn(players[playerID]);

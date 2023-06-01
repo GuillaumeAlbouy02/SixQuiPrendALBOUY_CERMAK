@@ -9,16 +9,17 @@ import lombok.Setter;
 import java.util.*;
 
 public class PlayedCardsBox extends VBox {
-    /*private @Setter @Getter TreeMap<CardView,Integer> playedCards = new TreeMap<>(this::compare);*/
+    private @Setter @Getter TreeMap<CardView,AbstractPlayer> playedCards = new TreeMap<>();
 
-    private @Setter @Getter TreeMap<String, AbstractPlayer> treePlayedCards = new TreeMap<>();
-    private @Setter @Getter ArrayList<CardView> playedCards = new ArrayList<>();
+    //private @Setter @Getter TreeMap<String, AbstractPlayer> treePlayedCards = new TreeMap<>();
+    //private @Setter @Getter ArrayList<CardView> playedCards = new ArrayList<>();
 
     public void addCard(CardView cardView, AbstractPlayer player){
         this.getChildren().add(cardView.getComponent());
-        playedCards.add(cardView);
+        //playedCards.add(cardView);
+        playedCards.put(cardView,player);
         cardView.toggleCard();
-        treePlayedCards.put(cardView.getCard().toString(), player);
+        //treePlayedCards.put(cardView.getCard().toString(), player);
     }
 
     public void removeCard(CardView cardView){
@@ -26,4 +27,5 @@ public class PlayedCardsBox extends VBox {
         playedCards.remove(cardView);
         cardView.toggleCard();
     }
+
 }

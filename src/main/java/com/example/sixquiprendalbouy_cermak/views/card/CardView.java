@@ -9,8 +9,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
 
+import java.util.Comparator;
 
-public class CardView {
+
+public class CardView implements Comparable<CardView> {
 
     @Getter
     protected Pane component;
@@ -25,7 +27,7 @@ public class CardView {
 
     //---------------------------------------------------------------------------------------------
 
-    public CardView(Card card, int width, int height) {
+    public CardView(Card card, int width, int height){
         this.card = card;
         this.frontSide = true;
         if (card == null) {
@@ -62,5 +64,11 @@ public class CardView {
         return "CardView{" +
                 card +
                 '}';
+    }
+
+    @Override
+    public int compareTo(CardView otherCard){
+        return Integer.compare(this.card.value,otherCard.card.value);
+
     }
 }

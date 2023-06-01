@@ -7,7 +7,6 @@ import com.example.sixquiprendalbouy_cermak.models.cards.CardStack;
 import com.example.sixquiprendalbouy_cermak.models.players.AbstractPlayer;
 import com.example.sixquiprendalbouy_cermak.models.players.Player;
 import com.example.sixquiprendalbouy_cermak.views.card.CardView;
-import javafx.event.Event;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -22,7 +21,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.TreeMap;
 
 public class Display {
     private final Game game;
@@ -32,7 +31,8 @@ public class Display {
 
 
     @Getter PlayedCardsBox playedCardsBox = new PlayedCardsBox();
-    ArrayList<CardView> playedCards = playedCardsBox.getPlayedCards();
+
+    TreeMap<CardView,AbstractPlayer> playedCards = playedCardsBox.getPlayedCards();
 
     private CardView selectedCard;
     private CardSet currentSet;
@@ -43,7 +43,7 @@ public class Display {
         this.game = game;
         this.stage = stage;
         this.selectedCard = null;
-        playedCardsBox.setPlayedCards(new ArrayList<>(game.getPlayerID()));
+        playedCardsBox.setPlayedCards(new TreeMap<CardView,AbstractPlayer>());
     }
 
     public void dsCreatePlayers() {
@@ -168,7 +168,7 @@ public class Display {
         }
     }
 
-    private void onStackClicked(MouseEvent e, Stack stack, CardStack realStack, Player player) {
+    private void onStackClicked(MouseEvent e, Stack stack, CardStack realStack, AbstractPlayer player) {
         if (selectedCard == null) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText("You must select a card from your hand first");
@@ -178,7 +178,7 @@ public class Display {
             List<Card> cardList =realStack.addMayTakeIfBelowOr6th(selectedCard.getCard());
             if (cardList.size()!=0){
                 for (Card card : cardList){
-                    game.getRealPlayers()[0].addScore(card.penalty);
+                    player.addScore(card.penalty);
                 }
             }
             //stack.resetStack(selectedCard);
@@ -191,12 +191,13 @@ public class Display {
     }
 
     public void resetPlayedCards() {
-        playedCards = new ArrayList<>();
+        playedCards = new TreeMap<CardView,AbstractPlayer>();
 
     }
 
     public void dsEndTurn(int playerNb) {
-        selectedCard = playedCardsBox.getPlayedCards().get(playerNb - 1);
+        selectedCard = playedCards.firstKey();
+        AbstractPlayer player = playedCards.get(selectedCard);
         selectedCard.toggleCard();
         VBox layout = new VBox();
         Stack[] stacks = new Stack[4];
@@ -225,12 +226,13 @@ public class Display {
         stage.setScene(sceneEnd);
     }
 
-    public void dropAllPlayedCardInStacks(ArrayList<CardView> playedCards) {
+    public void dropAllPlayedCardInStacks(TreeMap<CardView, AbstractPlayer>playedCards) {
 
         Stack goodStack;
         //ArrayList<CardView> playedCards = (ArrayList<CardView>) playedCardsBox.getPlayedCards().clone();
         if(playedCards.size()!=0) {
-            CardView card = playedCards.get(0);
+            CardView card = playedCards.firstKey();
+            AbstractPlayer player = playedCards.get(card);
             //for (CardView card : playedCards) {
                 goodStack = compareWithStackValues(card);
                 if (goodStack != null) {
@@ -238,7 +240,7 @@ public class Display {
                     playedCardsBox.removeCard(card);
                     dropAllPlayedCardInStacks(playedCardsBox.getPlayedCards());
                 } else {
-                    chooseStack(card);
+                    chooseStack(card, player);
                 }
             //}
         }
@@ -262,7 +264,7 @@ public class Display {
         return goodStack;
     }
 
-    public void chooseStack(CardView card){
+    public void chooseStack(CardView card, AbstractPlayer player){
         selectedCard = card;
         selectedCard.toggleCard();
         VBox layout = new VBox();
@@ -275,7 +277,7 @@ public class Display {
                 CardStack realStack = cardStack;
                 CardView cardView = new CardView(cardStack.getCard(j), cardWidth, cardHeight);
                 stack.getChildren().add(cardView.getComponent());
-                cardView.getComponent().setOnMouseClicked(e -> onStackClicked(e, stack, realStack, game.getRealPlayers()[game.getRealPlayers().length-cardStack.getCardCount()]));
+                cardView.getComponent().setOnMouseClicked(e -> onStackClicked(e, stack, realStack, player));
             }
             stacks[i] = stack;
             layout.getChildren().add(stack);

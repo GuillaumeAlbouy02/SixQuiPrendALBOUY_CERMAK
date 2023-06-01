@@ -35,17 +35,20 @@ public class Stack extends HBox {
     }
 
     public void addInStack(CardView cardView, PlayedCardsBox playedCardsBox){
-        List<Card> res = cardStack.addMayTakeIfBelowOr6th(cardView.getCard());//TODO ajouter le score de res au joueur correspondant
+        List<Card> res = cardStack.addMayTakeIfBelowOr6th(cardView.getCard());
         cardViews.add(cardView);
         if (res == null){
             System.out.println(res);
             this.getChildren().add(cardView.getComponent());
         } else {
+            for (Card card : res){
+                playedCardsBox.getPlayedCards().get(cardView).addScore(card.penalty);
+            }
             this.getChildren().removeAll();
             this.getChildren().add(cardView.getComponent());
         }
     }
-    public void resetStack(CardView card){//TODO ajouter le score de res au joueur correspondant
+    public void resetStack(CardView card){//TODO ajouter le score de res au joueur correspondant si cette méthode est utilisée
         cardStack.addMayTakeIfBelowOr6th(card.getCard());
 
     }
