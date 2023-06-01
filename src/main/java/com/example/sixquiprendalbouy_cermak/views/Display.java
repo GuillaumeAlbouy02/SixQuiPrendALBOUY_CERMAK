@@ -240,7 +240,7 @@ public class Display {
                     playedCardsBox.removeCard(card);
                     dropAllPlayedCardInStacks(playedCardsBox.getPlayedCards());
                 } else {
-                    chooseStack(card, player);
+                    player.chooseAStack(card,this);
                 }
             //}
         }
