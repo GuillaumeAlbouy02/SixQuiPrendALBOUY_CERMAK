@@ -290,6 +290,16 @@ public class Display {
         Scene sceneEnd = new Scene(dsScoreTab, 1000, 1000);
         stage.setScene(sceneEnd);
     }
+
+    public void nextPlayer(Player player) {
+        VBox layout = new VBox();
+        Label label = new Label(player.getName());
+        Button next = new Button("Start turn");
+        next.setOnAction((e)->playerTurn(player));
+        layout.getChildren().addAll(label,next);
+        Scene scene = new Scene(layout, 1000,1000);
+        stage.setScene(scene);
+    }
 }
 
 

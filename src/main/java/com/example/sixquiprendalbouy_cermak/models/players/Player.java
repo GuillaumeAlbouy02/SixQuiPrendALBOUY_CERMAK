@@ -16,7 +16,8 @@ public class Player extends AbstractPlayer {
 
     @Override
     public void turn(Display ds) {
-        ds.playerTurn(this);
+        ds.nextPlayer(this);
+        //ds.playerTurn(this);
     }
 
     @Override
