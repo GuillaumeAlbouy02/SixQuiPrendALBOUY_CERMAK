@@ -161,10 +161,8 @@ public class Display {
             alert.setContentText("You must select a card from your hand first");
             alert.showAndWait();
         } else {
-            //selectedCard.getComponent().setOnMouseClicked(i -> onStackClicked(i, stack, realStack));
             stack.addInStack(selectedCard, playedCardsBox);
 
-            //stack.resetStack(selectedCard);
             playedCardsBox.removeCard(selectedCard);
             selectedCard = null;
             dropAllPlayedCardInStacks(playedCardsBox.getPlayedCards());
@@ -172,36 +170,7 @@ public class Display {
     }
 
 
-    public void dsEndTurn(int playerNb) {
-        selectedCard = playedCards.firstKey();
-        AbstractPlayer player = playedCards.get(selectedCard);
-        selectedCard.toggleCard();
-        VBox layout = new VBox();
-        Stack[] stacks = new Stack[4];
-        int i = 0;
-        for (CardStack cardStack : game.getCardStacks()) {
-            Stack stack = new Stack(cardStack);
 
-            for (int j = 0; j < cardStack.getCardCount(); j++) {
-                CardStack realStack = cardStack;
-                CardView cardView = new CardView(cardStack.getCard(j), cardWidth, cardHeight);
-                stack.getChildren().add(cardView.getComponent());
-                //cardView.getComponent().setOnMouseClicked(e -> onStackClicked(e, stack, realStack, game.getPlayers()[playerNb]));
-            }
-            stacks[i] = stack;
-            layout.getChildren().add(stack);
-            i++;
-        }
-        Button next = new Button("Next Player");
-        playerNb++;
-        int nb = playerNb;
-        next.setOnAction(e -> game.endTurn(nb));
-        layout.getChildren().add(selectedCard.getComponent());
-        layout.getChildren().add(next);
-
-        Scene sceneEnd = new Scene(layout, 1000, 1000);
-        stage.setScene(sceneEnd);
-    }
 
     public void dropAllPlayedCardInStacks(TreeMap<CardView, AbstractPlayer> playedCards) {
 
@@ -250,23 +219,16 @@ public class Display {
             Stack stack = new Stack(cardStack);
 
             for (int j = 0; j < cardStack.getCardCount(); j++) {
-                CardStack realStack = cardStack;
                 CardView cardView = new CardView(cardStack.getCard(j), cardWidth, cardHeight);
                 stack.getChildren().add(cardView.getComponent());
-                cardView.getComponent().setOnMouseClicked(e -> onStackClicked(e, stack, realStack, player));
+                cardView.getComponent().setOnMouseClicked(e -> onStackClicked(e, stack, cardStack, player));
             }
             stacks[i] = stack;
             layout.getChildren().add(stack);
             i++;
         }
-        Button next = new Button("Next Player");
 
-        next.setOnAction(e -> {
-            playedCardsBox.removeCard(card);
-            dropAllPlayedCardInStacks(playedCardsBox.getPlayedCards());
-        });
         layout.getChildren().add(selectedCard.getComponent());
-        layout.getChildren().add(next);
 
         Scene sceneEnd = new Scene(layout, 1000, 1000);
         stage.setScene(sceneEnd);

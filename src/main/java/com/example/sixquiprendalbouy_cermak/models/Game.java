@@ -78,9 +78,11 @@ public class Game {
             System.out.println("Player ID = " + playerID);
             playerID = 0;
             ds.dropAllPlayedCardInStacks((TreeMap<CardView, AbstractPlayer>) ds.getPlayedCardsBox().getPlayedCards().clone());
+        }else{
+            System.out.println("Tour : " + playerID);
+            turn(players[playerID]);
         }
-        System.out.println("Tour : " + playerID);
-        turn(players[playerID]);
+
     }
 
     public void turn(AbstractPlayer player) {
@@ -99,8 +101,5 @@ public class Game {
         ds.dsEndGame(scoreTab);
     }
 
-    public void endTurn(int playerNb) {
-        ds.dsEndTurn(playerNb);
-    }
 }
 

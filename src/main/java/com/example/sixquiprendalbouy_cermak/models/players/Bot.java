@@ -23,6 +23,7 @@ public class Bot extends AbstractPlayer {
         CardView selectedCard = new CardView(this.getHand().getCards().get(0), cardWidth, cardHeight);
         ds.getPlayedCardsBox().addCard(selectedCard, this);
         ds.gameNextPlayer();
+        getHand().take(selectedCard.getCard());
     }
 
 
