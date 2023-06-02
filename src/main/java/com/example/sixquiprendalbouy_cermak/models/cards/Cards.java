@@ -5,20 +5,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-/** La class Cards permet de définir l'ensemble des Cartes
-*
-*   attributs :
-*       -MIN_CARD_VALUE : represente la valeur minimal d'une carte
-*       -MAX_CARD_VALUE : represente la valeur max d'une carte
-*       -DEFAULT_CARDS_COUNT_PER_PLAYER : represente le nombre de carte distribuer pour chaque joueurs
-*       -cards : represente la liste des cartes
-*
-*   methode :
-*       -cardOf(int i ) : permet de choisir la carte i_ème de paquet de carte
-*       -createCards() : permet de crée l'ensemble du paquet de carte
-*       -cardPenalty(int number) : permet d'attribuer une pénalité en fonction du numéro de la valeur de la carte
-*       -distributeRandomCards(int nPlayer, Random rand, int nCards): permet de distribuer aux joueurs leurs cartes
-* */
+/**
+ * La class Cards permet de définir l'ensemble des Cartes
+ * <p>
+ * attributs :
+ * -MIN_CARD_VALUE : represente la valeur minimal d'une carte
+ * -MAX_CARD_VALUE : represente la valeur max d'une carte
+ * -DEFAULT_CARDS_COUNT_PER_PLAYER : represente le nombre de carte distribuer pour chaque joueurs
+ * -cards : represente la liste des cartes
+ * <p>
+ * methode :
+ * -cardOf(int i ) : permet de choisir la carte i_ème de paquet de carte
+ * -createCards() : permet de crée l'ensemble du paquet de carte
+ * -cardPenalty(int number) : permet d'attribuer une pénalité en fonction du numéro de la valeur de la carte
+ * -distributeRandomCards(int nPlayer, Random rand, int nCards): permet de distribuer aux joueurs leurs cartes
+ */
 
 public class Cards {
 
@@ -30,12 +31,12 @@ public class Cards {
     public static final List<Card> cards = createCards();
     private List<Card> remain;
 
-    public Cards(){
+    public Cards() {
         this.remain = new ArrayList<>(cards);
     }
 
     public static Card cardOf(int i) {
-        return cards.get(i-1);
+        return cards.get(i - 1);
     }
 
     private static List<Card> createCards() {
@@ -51,7 +52,7 @@ public class Cards {
             return 7;
         } else if (number % 11 == 0) {
             return 5;
-        } else if(number % 10 == 0) {
+        } else if (number % 10 == 0) {
             return 3;
         } else if (number % 5 == 0) {
             return 2;
@@ -61,7 +62,7 @@ public class Cards {
     }
 
     public static List<CardSet> distributeRandomCards(int nPlayer, Random rand) {
-        return distributeRandomCards(nPlayer, rand,  DEFAULT_CARDS_COUNT_PER_PLAYER);
+        return distributeRandomCards(nPlayer, rand, DEFAULT_CARDS_COUNT_PER_PLAYER);
     }
 
     public static List<CardSet> distributeRandomCards(int nPlayer, Random rand, int nCards) {
@@ -85,9 +86,13 @@ public class Cards {
         return res;
     }
 
-    public Card takeFromRemain(Random rand){
+    public Card takeFromRemain(Random rand) {
         int idx = rand.nextInt(remain.size());
         return remain.remove(idx);
     }
-
+    public void removeAllCard(List<CardSet> removedCards){
+        for(CardSet cardSet:removedCards){
+            remain.removeAll(cardSet.getCards());
+        }
+    }
 }

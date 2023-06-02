@@ -1,15 +1,12 @@
 package com.example.sixquiprendalbouy_cermak.views.card;
 
 
-
 import com.example.sixquiprendalbouy_cermak.models.cards.Card;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import lombok.Getter;
-
-import java.util.Comparator;
 
 
 public class CardView implements Comparable<CardView> {
@@ -20,14 +17,16 @@ public class CardView implements Comparable<CardView> {
     protected ImageView frontImageView;
     protected ImageView backImageView;
 
-    /** may be null if unknown.. forced to back side */
+    /**
+     * may be null if unknown.. forced to back side
+     */
     protected @Getter Card card;
 
     protected boolean frontSide;
 
     //---------------------------------------------------------------------------------------------
 
-    public CardView(Card card, int width, int height){
+    public CardView(Card card, int width, int height) {
         this.card = card;
         this.frontSide = true;
         if (card == null) {
@@ -67,8 +66,8 @@ public class CardView implements Comparable<CardView> {
     }
 
     @Override
-    public int compareTo(CardView otherCard){
-        return Integer.compare(this.card.value,otherCard.card.value);
+    public int compareTo(CardView otherCard) {
+        return Integer.compare(this.card.value, otherCard.card.value);
 
     }
 }

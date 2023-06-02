@@ -1,16 +1,16 @@
 package com.example.sixquiprendalbouy_cermak.models.players;
 
+import com.example.sixquiprendalbouy_cermak.models.cards.Card;
 import com.example.sixquiprendalbouy_cermak.models.cards.CardSet;
-import com.example.sixquiprendalbouy_cermak.models.cards.Cards;
 import com.example.sixquiprendalbouy_cermak.views.Display;
 import com.example.sixquiprendalbouy_cermak.views.card.CardView;
-import lombok.Getter;
-import lombok.Setter;
 
-public class Player extends AbstractPlayer{
+public class Player extends AbstractPlayer {
 
 
-    public Player(String name){
+    public Player(String name, CardSet hand) {
+        this.setHand(hand);
+        this.getHand().getCards().sort(Card::compareTo);
         this.setName(name);
     }
 
@@ -21,6 +21,6 @@ public class Player extends AbstractPlayer{
 
     @Override
     public void chooseAStack(CardView card, Display ds) {
-        ds.chooseStack(card,this);
+        ds.chooseStack(card, this);
     }
 }

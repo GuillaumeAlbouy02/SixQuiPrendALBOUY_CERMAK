@@ -14,14 +14,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -32,20 +30,21 @@ public class Display {
     private final int cardWidth = 65;
 
 
-    @Getter PlayedCardsBox playedCardsBox = new PlayedCardsBox();
+    @Getter
+    PlayedCardsBox playedCardsBox = new PlayedCardsBox();
 
-    TreeMap<CardView,AbstractPlayer> playedCards = playedCardsBox.getPlayedCards();
+    TreeMap<CardView, AbstractPlayer> playedCards = playedCardsBox.getPlayedCards();
 
     private CardView selectedCard;
     private CardSet currentSet;
-    private Stack[] allStack = new Stack[4];
+    private @Getter Stack[] allStack = new Stack[4];
 
 
     public Display(Game game, Stage stage) {
         this.game = game;
         this.stage = stage;
         this.selectedCard = null;
-        playedCardsBox.setPlayedCards(new TreeMap<CardView,AbstractPlayer>());
+        playedCardsBox.setPlayedCards(new TreeMap<CardView, AbstractPlayer>());
     }
 
     public void dsCreatePlayers() {
@@ -80,13 +79,13 @@ public class Display {
 
     }
 
-    public VBox initCardStack(){
+    public VBox initCardStack() {
         int i = 0;
         VBox layout = new VBox();
-        for(CardStack cardStack: game.getCardStacks()){
+        for (CardStack cardStack : game.getCardStacks()) {
             Stack stack = new Stack(cardStack);
-            for(Card card: cardStack.getCards()){
-                CardView cardView = new CardView(card,cardWidth,cardHeight);
+            for (Card card : cardStack.getCards()) {
+                CardView cardView = new CardView(card, cardWidth, cardHeight);
                 stack.simpleAdd(cardView);
             }
             layout.getChildren().add(stack);
@@ -98,6 +97,9 @@ public class Display {
         return layout;
     }
 
+    public void gameNextPlayer(){
+        game.nextTurn();
+    }
 
     public void playerTurn(Player player) {
         currentSet = player.getHand();
@@ -158,9 +160,9 @@ public class Display {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText("You must select a card from your hand first");
             alert.showAndWait();
-        }else {
+        } else {
             //selectedCard.getComponent().setOnMouseClicked(i -> onStackClicked(i, stack, realStack));
-            stack.addInStack(selectedCard,playedCardsBox);
+            stack.addInStack(selectedCard, playedCardsBox);
 
             //stack.resetStack(selectedCard);
             playedCardsBox.removeCard(selectedCard);
@@ -201,25 +203,24 @@ public class Display {
         stage.setScene(sceneEnd);
     }
 
-    public void dropAllPlayedCardInStacks(TreeMap<CardView, AbstractPlayer>playedCards) {
+    public void dropAllPlayedCardInStacks(TreeMap<CardView, AbstractPlayer> playedCards) {
 
         Stack goodStack;
         //ArrayList<CardView> playedCards = (ArrayList<CardView>) playedCardsBox.getPlayedCards().clone();
-        if(playedCards.size()!=0) {
+        if (playedCards.size() != 0) {
             CardView card = playedCards.firstKey();
             AbstractPlayer player = playedCards.get(card);
             //for (CardView card : playedCards) {
-                goodStack = compareWithStackValues(card);
-                if (goodStack != null) {
-                    goodStack.addInStack(card, playedCardsBox);
-                    playedCardsBox.removeCard(card);
-                    dropAllPlayedCardInStacks(playedCardsBox.getPlayedCards());
-                } else {
-                    player.chooseAStack(card,this);
-                }
+            goodStack = compareWithStackValues(card);
+            if (goodStack != null) {
+                goodStack.addInStack(card, playedCardsBox);
+                playedCardsBox.removeCard(card);
+                dropAllPlayedCardInStacks(playedCardsBox.getPlayedCards());
+            } else {
+                player.chooseAStack(card, this);
+            }
             //}
-        }
-        else{
+        } else {
             game.turn(game.getPlayers()[game.getPlayerID()]);
         }
     }
@@ -239,7 +240,7 @@ public class Display {
         return goodStack;
     }
 
-    public void chooseStack(CardView card, AbstractPlayer player){
+    public void chooseStack(CardView card, AbstractPlayer player) {
         selectedCard = card;
         selectedCard.toggleCard();
         VBox layout = new VBox();
@@ -271,16 +272,16 @@ public class Display {
         stage.setScene(sceneEnd);
     }
 
-    public void dsEndGame(TreeMap<Integer,AbstractPlayer> scoreTab){
+    public void dsEndGame(TreeMap<Integer, AbstractPlayer> scoreTab) {
         VBox dsScoreTab = new VBox();
         Set<Integer> keys = scoreTab.keySet();
-        for(Integer key:keys){
+        for (Integer key : keys) {
             Label scorePlayer = new Label(scoreTab.get(key).getName() + " have " + key + "Ox");
             dsScoreTab.getChildren().add(scorePlayer);
         }
 
         Button newGame = new Button("New Game");
-        newGame.setOnAction(e ->{
+        newGame.setOnAction(e -> {
             game.startGame();
         });
 

@@ -7,16 +7,20 @@ import lombok.Getter;
 import lombok.Setter;
 
 public abstract class AbstractPlayer {
-    private @Getter @Setter CardSet hand;
-    private @Getter @Setter int score;
-    private @Getter @Setter String name;
+    private @Getter
+    @Setter CardSet hand;
+    private @Getter
+    @Setter int score;
+    private @Getter
+    @Setter String name;
 
     public abstract void turn(Display ds);
+
     public abstract void chooseAStack(CardView card, Display ds);
 
-    public int addScore(int i){
-        this.score +=i;
-        return score+i;
+    public int addScore(int i) {
+        this.score += i;
+        return score + i;
     }
 
 }

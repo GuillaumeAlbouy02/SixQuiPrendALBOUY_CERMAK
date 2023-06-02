@@ -25,7 +25,8 @@ public class Game {
     private @Getter Player[] realPlayers;
     private final Cards cards;
     private final @Getter CardStack[] cardStacks = new CardStack[4];
-    private @Getter @Setter ArrayList<Card> playedCards;
+    private @Getter
+    @Setter ArrayList<Card> playedCards;
 
     private @Getter int turn;
     private @Getter int playerID;
@@ -33,71 +34,72 @@ public class Game {
     public Game(Stage stage) {
         this.stage = stage;
         this.ds = new Display(this, stage);
-        this.cards=new Cards();
+        this.cards = new Cards();
         this.turn = 2;
         this.playerID = 0;
-        this.playedCards = new ArrayList<>();;
+        this.playedCards = new ArrayList<>();
+        ;
     }
 
-    public void startGame(){
+    public void startGame() {
         ds.dsCreatePlayers();
     }
 
-    public void createPlayers(int nbPlayers, int nbBots){
-        players = new AbstractPlayer[nbPlayers+nbBots];
+    public void createPlayers(int nbPlayers, int nbBots) {
+        players = new AbstractPlayer[nbPlayers + nbBots];
         realPlayers = new Player[nbPlayers];
-        for (int i=0; i<nbPlayers;i++){
-            Player player = new Player("Player"+(i+1));
-            players[i]=player;
+        List<CardSet> hands = cards.distributeRandomCards(nbPlayers + nbBots, new Random());
+        cards.removeAllCard(hands);
+        int cardSetId = 0;
+        for (int i = 0; i < nbPlayers; i++) {
+            Player player = new Player("Player" + (i + 1), hands.get(cardSetId));
+            players[i] = player;
             realPlayers[i] = player;
+            cardSetId++;
+        }
+        for (int c = nbPlayers; c < nbPlayers + nbBots; c++) {
+            AbstractPlayer bot = new Bot("Bot" + (c - nbPlayers + 1),hands.get(cardSetId) );
+            players[c] = bot;
+        }
 
-        }
-        for (int c=nbPlayers; c<nbPlayers+nbBots;c++){
-            AbstractPlayer bot = new Bot("Bot"+(c-nbPlayers+1));
-            players[c]=bot;
-        }
-        List<CardSet> hands = cards.distributeRandomCards(nbPlayers+nbBots,new Random());
-        for (int j = 0;j<hands.size();j++){
-            players[j].setHand(hands.get(j));
-        }
         play();
     }
 
-    public void play(){
-        for (int i = 0; i<4; i++){
+    public void play() {
+        for (int i = 0; i < 4; i++) {
             cardStacks[i] = new CardStack(cards.takeFromRemain(new Random()));
         }
         players[playerID].turn(ds);
     }
 
-    public void nextTurn(){
-
+    public void nextTurn() {
         playerID++;
-        if(players.length <= playerID){
+        if (players.length <= playerID) {
+            System.out.println("Player ID = " + playerID);
             playerID = 0;
             ds.dropAllPlayedCardInStacks((TreeMap<CardView, AbstractPlayer>) ds.getPlayedCardsBox().getPlayedCards().clone());
-           } else{
-            turn(players[playerID]);
         }
+        System.out.println("Tour : " + playerID);
+        turn(players[playerID]);
     }
 
-    public void turn(AbstractPlayer player){
-        if (player.getHand().getCards().size() == 0){
+    public void turn(AbstractPlayer player) {
+        if (player.getHand().getCards().size() == 0) {
             endGame();
         } else {
             player.turn(ds);
         }
     }
 
-    public void endGame(){
-        TreeMap<Integer,AbstractPlayer> scoreTab = new TreeMap<Integer, AbstractPlayer>();
-        for(AbstractPlayer player:players){
-            scoreTab.put(player.getScore(),player);
+    public void endGame() {
+        TreeMap<Integer, AbstractPlayer> scoreTab = new TreeMap<Integer, AbstractPlayer>();
+        for (AbstractPlayer player : players) {
+            scoreTab.put(player.getScore(), player);
         }
         ds.dsEndGame(scoreTab);
     }
 
-    public void endTurn(int playerNb){
+    public void endTurn(int playerNb) {
         ds.dsEndTurn(playerNb);
     }
 }
